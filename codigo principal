@@ -1,0 +1,40 @@
+import pygame
+
+pygame.init()
+
+x = 1280
+y = 720
+ 
+screen = pygame.display.set_mode((x,y))
+pygame.display.set_caption('Meu jogo em python')
+
+#precisa coloca a imagem dentro do parenteses depois do load
+bg = pygame.image.load().convert_alpha()
+bg = pygame.transform.scale(bg, (x,y))
+
+#precisa colocar as imagens
+alien = pygame.image.load().convert_alpha()
+alien = pygame.transform.scale(alien (50, 50))
+playerImg = pygame.image.load().convert_alpha()
+playerImg = pygame.transform.scale(playerImg, (50, 50))#conversão do tamanho da nave
+playerImg = pygame.transform.rotate(playerImg, -90)
+
+
+rodando = True
+
+while rodando:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            rodando = False
+
+    screen.blit(bg, (0,0))
+
+    rel_x = x % bg.get_rect().width
+    screen.blit(bg, (rel_x - bg.rect().width,0)) #cria background
+    if rel_x < 1280:
+        screen.blit(bg, (rel_x, 0))
+
+    #movimento
+    x -= 2
+    
+    pygame.display.update()
