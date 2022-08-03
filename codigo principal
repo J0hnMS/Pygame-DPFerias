@@ -10,20 +10,20 @@ pygame.display.set_caption('Meu jogo em python')
 
 #precisa coloca a imagem dentro do parenteses depois do load
 #imagem background
-bg = pygame.image.load().convert_alpha()
-bg = pygame.transform.scale(bg, (x,y))
+background = pygame.image.load('imagens\Background.jpg').convert_alpha()
+background = pygame.transform.scale(background, (x,y))
 
 #precisa colocar as imagens
 #define imagem invasores
-alien = pygame.image.load().convert_alpha()
-alien = pygame.transform.scale(alien (50, 50))
+invasores = pygame.image.load('imagens\Invasores.png').convert_alpha()
+invasores = pygame.transform.scale(invasores, (50, 50))
 #define imagem nave
-player = pygame.image.load().convert_alpha()
+player = pygame.image.load('imagens\player.png').convert_alpha()
 player = pygame.transform.scale(player, (50, 50))#conversão do tamanho da nave
-player = pygame.transform.rotate(player, -90)
+player = pygame.transform.rotate(player, -90) 
 
-pos_alien_x = 500
-pos_alien_y = 360
+pos_invasores_x = 500
+pos_invasores_y = 360
 
 pos_player_x = 200
 pos_player_y = 300
@@ -36,12 +36,12 @@ while rodando:
         if event.type == pygame.QUIT:
             rodando = False
 
-    screen.blit(bg, (0,0))
-
-    rel_x = x % bg.get_rect().width
-    screen.blit(bg, (rel_x - bg.rect().width,0)) #cria background
+    screen.blit(background, (0,0))
+    #junta a imagem de fundo para ficar initerrupta
+    rel_x = x % background.get_rect().width
+    screen.blit(background, (rel_x - background.get_rect().width,0)) #cria background
     if rel_x < 1280:
-        screen.blit(bg, (rel_x, 0))
+        screen.blit(background, (rel_x, 0))
 
     #define teclas
     tecla = pygame.key.get_pressed()
@@ -52,10 +52,11 @@ while rodando:
 
     #movimento do background
     x -= 2
-    pos_alien_x -= 1
+    #velocidade invasores
+    pos_invasores_x -= 1
     
     #cria imagem invasores e nave
-    screen.blit(alien(pos_alien_x, pos_alien_y))
-    screen.blit(player(pos_alien_x, pos_alien_y))
+    screen.blit(invasores,(pos_invasores_x, pos_invasores_y))
+    screen.blit(player,(pos_player_x, pos_player_y))
     
     pygame.display.update()
