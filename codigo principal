@@ -52,7 +52,7 @@ while rodando:
 
     #movimento do background
     x -= 2
-    #velocidade invasores
+    #movimento invasores
     pos_invasores_x -= 1
     
     #cria imagem invasores e nave
