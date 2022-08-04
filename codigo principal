@@ -70,9 +70,9 @@ def respawn_missil():
 def colisao():
     global pontos
     #verifica colisao entre invasores/nave e define limite final tela invasores
-    if player_rect.colliderect(invasores_rect): 
+    if player_rect.colliderect(invasores_rect):
         pontos -= 1
-    if invasores_rect == 60:
+    if pos_invasores_x == pos_player_x:
         pontos -= 1
     elif missil_rect.colliderect(invasores_rect):
         pontos += 1
@@ -106,18 +106,16 @@ while rodando:
     #define tecla para atirar 
     if tecla[pygame.K_SPACE]:
         atirar = True
-        vel_missil_x = 10
+        velocidade_missil_x = 2
 
-    #respawn invasores
-    if pos_invasores_x == 50:
-        pos_invasores_x = respawn()[0]
-        pos_invasores_y = respawn()[1]
 
     #aplica limites da tela no missil
     if pos_missil_x == 1300:
         pos_missil_x, pos_missil_y, atirar, velocidade_missil_x= respawn_missil()
+    elif missil_rect.colliderect(invasores_rect):
+        pos_missil_x, pos_missil_y, atirar, velocidade_missil_x= respawn_missil()
 
-    #aplica limites da tela nos invasores
+    #aplica limites da tela nos invasores e respawn
     if pos_invasores_x == 50 or colisao():
         pos_invasores_x = respawn()[0]
         pos_invasores_y = respawn()[1]
