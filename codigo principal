@@ -109,6 +109,10 @@ while rodando:
     if tecla[pygame.K_SPACE]:
         atirar = True
         velocidade_missil_x = 2
+
+    #Game over
+    if pontos == -1:
+        rodando = False
         
        
 
