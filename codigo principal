@@ -1,6 +1,8 @@
 import pygame
 import random
 
+from sklearn.preprocessing import PolynomialFeatures
+
 pygame.init()
 
 x = 1280
@@ -9,26 +11,25 @@ y = 720
 screen = pygame.display.set_mode((x,y))
 pygame.display.set_caption('Meu jogo em python')
 
-
 #imagem background
 background = pygame.image.load('imagens\Background.jpg').convert_alpha()
 background = pygame.transform.scale(background, (x,y))
 
-
 #define imagem invasores
 invasores = pygame.image.load('imagens\Invasores.png').convert_alpha()
 invasores = pygame.transform.scale(invasores, (50, 50))
+
 #define imagem nave
-player = pygame.image.load('imagens\player.png').convert_alpha()
+player = pygame.image.load('imagens\Player.png').convert_alpha()
 player = pygame.transform.scale(player, (50, 50))#conversão do tamanho da nave
 player = pygame.transform.rotate(player, -90) 
 
 #define imagem míssil
-missil = pygame.image.load().convert_alpha()
+missil = pygame.image.load('imagens\missile.png').convert_alpha()
 missil = pygame.transform.scale(missil, (25, 25))
-missil = pygame.transform.rotate(missil, -45)
+missil = pygame.transform.rotate(missil, -90)
 
-
+#Variaveis de posição
 pos_invasores_x = 500
 pos_invasores_y = 360
 
@@ -39,17 +40,44 @@ vel_missil_x = 0
 pos_missil_x = 200
 pos_missil_y = 300
 
+pontos = 0
+
 atirar = False
 
 rodando = True
+#colocar fonte desejada entre as aspas
+fonte = pygame.font.SysFont('',50)
 
-
+#define imagem como obejeto
+player_rect = player.get_rect()
+invasores_rect = invasores.get_rect()
+missil_rect = missil.get_rect()
 
 #funções
 def respawn():
     x = 1350
     y = random.randint(1, 640)
     return [x,y]
+
+#respawn do missil apos cada tiro
+def respawn_missil():
+    atirar = False
+    respawn_missil_x = pos_player_x
+    respawn_missil_y = pos_player_y
+    vel_missil_x = 0
+    return [respawn_missil_x, respawn_missil_y, atirar, vel_missil_x]
+
+#colisao entre objetos
+def colisao():
+    global pontos
+    #verifica colisao entre invasores/nave e define limite final tela invasores
+    if player_rect.colliderect(invasores_rect) or invasores_rect == 60:
+        pontos -= 1
+    elif missil_rect.colliderect(invasores_rect):
+        pontos += 1
+        return True
+    else:
+        return False
 
 
 while rodando:
@@ -68,27 +96,60 @@ while rodando:
     tecla = pygame.key.get_pressed()
     if tecla[pygame.K_UP] and pos_player_y > 1:
         pos_player_y -= 1
+        if not atirar:
+            pos_missil_y -= 1
     elif tecla[pygame.K_DOWN] and pos_player_y < 665:
         pos_player_y += 1
-    
+        if not atirar:
+            pos_missil_y += 1
+
     if tecla[pygame.K_SPACE]:
         atirar = True
+        vel_missil_x = 2
 
-    #respawn
+    #respawn invasores
     if pos_invasores_x == 50:
         pos_invasores_x = respawn()[0]
         pos_invasores_y = respawn()[1]
 
+    #aplica limites da tela no missil
+    if pos_missil_x == 1300:
+        pos_missil_x, pos_missil_y, atirar, vel_missil_x = respawn_missil()
+
+    if pos_invasores_x == 50 or colisao():
+        pos_invasores_x = respawn()[0]
+        pos_invasores_y = respawn()[1]
+
+    #define posicao objetos
+    player_rect.x = pos_player_x
+    player_rect.y = pos_player_y
+
+    invasores_rect.x = pos_invasores_x
+    invasores_rect.y = pos_invasores_y
+
+    missil_rect.x = pos_missil_x
+    missil_rect.y = pos_missil_y
+ 
     #movimento do background
-    x -= 2
+    x -= 2 
     #movimento invasores
     pos_invasores_x -= 1
     
     pos_missil_x += vel_missil_x
 
-    #cria imagem invasores e nave
+    pygame.draw.rect(screen, (255,0,0), player_rect,4)
+    pygame.draw.rect(screen, (255,0,0), invasores_rect,4)
+    pygame.draw.rect(screen, (255,0,0), missil_rect,4)
+
+    #renderizacao dos pontos
+    score = fonte.render(f'Pontos: int{pontos}', True, (0,0,0))
+    screen.blit(score, (50,50))
+
+    #cria imagem invasores, nave e missil
     screen.blit(invasores,(pos_invasores_x, pos_invasores_y))
     screen.blit(missil, (pos_missil_x, pos_missil_y))
     screen.blit(player,(pos_player_x, pos_player_y))
     
+    print(pontos)
+
     pygame.display.update()
