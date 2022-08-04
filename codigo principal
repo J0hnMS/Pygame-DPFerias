@@ -43,6 +43,7 @@ pontos = 0
 atirar = False
 
 rodando = True
+
 #colocar fonte desejada entre as aspas
 fonte = pygame.font.SysFont('',50)
 
@@ -62,14 +63,16 @@ def respawn_missil():
     atirar = False
     respawn_missil_x = pos_player_x
     respawn_missil_y = pos_player_y
-    vel_missil_x = 0
+    velocidade_missil_x = 0
     return [respawn_missil_x, respawn_missil_y, atirar, velocidade_missil_x]
 
 #colisao entre objetos
 def colisao():
     global pontos
     #verifica colisao entre invasores/nave e define limite final tela invasores
-    if player_rect.colliderect(invasores_rect) or invasores_rect == 60:
+    if player_rect.colliderect(invasores_rect): 
+        pontos -= 1
+    if invasores_rect == 60:
         pontos -= 1
     elif missil_rect.colliderect(invasores_rect):
         pontos += 1
@@ -112,7 +115,7 @@ while rodando:
 
     #aplica limites da tela no missil
     if pos_missil_x == 1300:
-        pos_missil_x, pos_missil_y, atirar, vel_missil_x = respawn_missil()
+        pos_missil_x, pos_missil_y, atirar, velocidade_missil_x= respawn_missil()
 
     #aplica limites da tela nos invasores
     if pos_invasores_x == 50 or colisao():
