@@ -38,7 +38,7 @@ velocidade_missil_x = 0
 pos_missil_x = 200
 pos_missil_y = 300
 
-pontos = 0
+pontos = 3
 
 atirar = False
 
@@ -109,6 +109,8 @@ while rodando:
     if tecla[pygame.K_SPACE]:
         atirar = True
         velocidade_missil_x = 2
+        
+       
 
 
     #aplica limites da tela no missil
