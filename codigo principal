@@ -92,7 +92,7 @@ while rodando:
     if rel_x < 1280:
         screen.blit(background, (rel_x, 0))
 
-    #define teclas
+    #define teclas para movimentação
     tecla = pygame.key.get_pressed()
     if tecla[pygame.K_UP] and pos_player_y > 1:
         pos_player_y -= 1
@@ -102,7 +102,7 @@ while rodando:
         pos_player_y += 1
         if not atirar:
             pos_missil_y += 1
-
+    #define tecla para atirar 
     if tecla[pygame.K_SPACE]:
         atirar = True
         vel_missil_x = 2
@@ -116,6 +116,7 @@ while rodando:
     if pos_missil_x == 1300:
         pos_missil_x, pos_missil_y, atirar, vel_missil_x = respawn_missil()
 
+    #aplica limites da tela nos invasores
     if pos_invasores_x == 50 or colisao():
         pos_invasores_x = respawn()[0]
         pos_invasores_y = respawn()[1]
@@ -135,6 +136,7 @@ while rodando:
     #movimento invasores
     pos_invasores_x -= 1
     
+    #movimeno missil
     pos_missil_x += vel_missil_x
 
     pygame.draw.rect(screen, (255,0,0), player_rect,4)
