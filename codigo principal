@@ -1,8 +1,6 @@
 import pygame
 import random
 
-from sklearn.preprocessing import PolynomialFeatures
-
 pygame.init()
 
 x = 1280
@@ -36,7 +34,7 @@ pos_invasores_y = 360
 pos_player_x = 200
 pos_player_y = 300
 
-vel_missil_x = 0
+velocidade_missil_x = 0
 pos_missil_x = 200
 pos_missil_y = 300
 
@@ -65,7 +63,7 @@ def respawn_missil():
     respawn_missil_x = pos_player_x
     respawn_missil_y = pos_player_y
     vel_missil_x = 0
-    return [respawn_missil_x, respawn_missil_y, atirar, vel_missil_x]
+    return [respawn_missil_x, respawn_missil_y, atirar, velocidade_missil_x]
 
 #colisao entre objetos
 def colisao():
@@ -105,7 +103,7 @@ while rodando:
     #define tecla para atirar 
     if tecla[pygame.K_SPACE]:
         atirar = True
-        vel_missil_x = 2
+        vel_missil_x = 10
 
     #respawn invasores
     if pos_invasores_x == 50:
@@ -137,14 +135,14 @@ while rodando:
     pos_invasores_x -= 1
     
     #movimeno missil
-    pos_missil_x += vel_missil_x
+    pos_missil_x += velocidade_missil_x
 
     pygame.draw.rect(screen, (255,0,0), player_rect,4)
     pygame.draw.rect(screen, (255,0,0), invasores_rect,4)
     pygame.draw.rect(screen, (255,0,0), missil_rect,4)
 
     #renderizacao dos pontos
-    score = fonte.render(f'Pontos: int{pontos}', True, (0,0,0))
+    score = fonte.render(f'Pontos: {int(pontos)}', True, (0,0,0))
     screen.blit(score, (50,50))
 
     #cria imagem invasores, nave e missil
