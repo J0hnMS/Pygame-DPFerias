@@ -13,7 +13,7 @@ def tela_de_inicio(window):
     window = pygame.display.set_mode((WIDTH,HEIGHT))
     pygame.display.set_caption('Invasores Espaciais')
 
-    background = pygame.image.load('assets/img/background.png').convert_alpha()
+    background = pygame.image.load('imagens\Background.jpg'').convert_alpha()
     background_format = pygame.transform.scale(background,(WIDTH,HEIGHT))
     font = pygame.font.Font('assets/font/04B_30__.TTF', 60)
     titulo = font.render('INVASORES ESPACIAIS',True,(0,0,0))
