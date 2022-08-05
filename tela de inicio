@@ -30,6 +30,15 @@ def tela_de_inicio(window):
             if event.type == pygame.QUIT:
                 STATE = 'QUIT'
                 rodando = False
-            if event.type == pygame.KEYUP:
-                    STATE = 'escolha_fase'
-                    rodando = False
+            
+
+
+        # ----- Gera saídas
+        window.fill((0, 0, 0))  # Preenche com a cor branca
+        window.blit(background_format, (0, 0))
+        window.blit(titulo, (100, 100))
+        window.blit(sub_titulo, (100, 200))
+
+        pygame.display.update()  # Mostra o novo frame para o jogador
+
+    return STATE
