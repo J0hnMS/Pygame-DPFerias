@@ -1,0 +1,187 @@
+import pygame
+import random
+
+pygame.init()
+
+x = 1280
+y = 720
+
+screen = pygame.display.set_mode((x,y))
+pygame.display.set_caption('Meu jogo em python')
+
+#imagem background
+background = pygame.image.load('imagens\Background.jpg').convert_alpha()
+background = pygame.transform.scale(background, (x,y))
+
+#define imagem invasores
+invasores = pygame.image.load('imagens\Invasores.png').convert_alpha()
+invasores = pygame.transform.scale(invasores, (50, 50))
+
+#define imagem nave
+player = pygame.image.load('imagens\Player.png').convert_alpha()
+player = pygame.transform.scale(player, (50, 50))#conversão do tamanho da nave
+player = pygame.transform.rotate(player, -90) 
+
+#define imagem míssil
+missil = pygame.image.load('imagens\missile.png').convert_alpha()
+missil = pygame.transform.scale(missil, (25, 25))
+missil = pygame.transform.rotate(missil, -90)
+
+#Variaveis de posição
+pos_invasores_x = 800
+pos_invasores_y = 360
+
+pos_player_x = 200
+pos_player_y = 300
+
+velocidade_missil_x = 0
+pos_missil_x = 200
+pos_missil_y = 300
+
+pontos = 0
+
+atirar = False
+
+rodando = True
+
+#define a fonte da escrita dos pontos
+fonte = pygame.font.SysFont('Type1',50)
+
+#define imagem como obejeto
+player_rect = player.get_rect()
+invasores_rect = invasores.get_rect()
+missil_rect = missil.get_rect()
+
+#funções
+def respawn():
+    x = 1350
+    y = random.randint(1, 640)
+    return [x,y]
+
+#respawn do missil apos cada tiro
+def respawn_missil():
+    atirar = False
+    respawn_missil_x = pos_player_x
+    respawn_missil_y = pos_player_y
+    velocidade_missil_x = 0
+    return [respawn_missil_x, respawn_missil_y, atirar, velocidade_missil_x]
+
+#colisao entre objetos
+def colisao():
+    global pontos
+    #verifica colisao entre invasores/nave e define limite final tela invasores
+    if player_rect.colliderect(invasores_rect):
+        pontos -= 1
+        return True
+    elif pos_invasores_x == pos_player_x:
+        pontos -= 1
+        return True
+    elif missil_rect.colliderect(invasores_rect):
+        pontos += 1
+        return True
+    else:
+        return False
+
+class enemies(pygame.sprite.Sprite):
+    def __init__(self, img):
+        # Construtor da classe mãe (Sprite).
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = img
+        self.image = pygame.Surface([50,50])
+        self.rect = self.image.get_rect()
+        self.rect.y = random.randint(0, 720)
+        self.speedy = random.randint(2, 9)
+
+    def update(self):
+        # Atualizando a posição do meteoro
+        self.rect.y += self.speedy
+        # Se o meteoro passar do final da tela, volta para cima e sorteia
+        # novas posições e velocidades
+        if self.rect.top > y or self.rect.right < 0 or self.rect.left > x:
+            self.rect.y = random.randint(0, 720)
+
+# Criando um grupo de meteoros
+todos_invasores = pygame.sprite.Group()
+# Criando os meteoros
+for i in range(8):
+    invasor = enemies(invasores)
+    todos_invasores.add(invasor)
+
+while rodando:
+    todos_invasores.draw(screen)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            rodando = False
+
+    screen.blit(background, (0,0))
+    #junta a imagem de fundo para ficar initerrupta
+    rel_x = x % background.get_rect().width
+    screen.blit(background, (rel_x - background.get_rect().width,0)) #cria background
+    if rel_x < 1280:
+        screen.blit(background, (rel_x, 0))
+
+    #define teclas para movimentação
+    tecla = pygame.key.get_pressed()
+    if tecla[pygame.K_UP] and pos_player_y > 1:
+        pos_player_y -= 1
+        if not atirar:
+            pos_missil_y -= 1
+    elif tecla[pygame.K_DOWN] and pos_player_y < 665:
+        pos_player_y += 1
+        if not atirar:
+            pos_missil_y += 1
+    #define tecla para atirar 
+    if tecla[pygame.K_SPACE]:
+        atirar = True
+        velocidade_missil_x = 2
+
+    #aplica limites da tela no missil
+    if pos_missil_x == 1300:
+        pos_missil_x, pos_missil_y, atirar, velocidade_missil_x= respawn_missil()
+    elif missil_rect.colliderect(invasores_rect):
+        pos_missil_x, pos_missil_y, atirar, velocidade_missil_x= respawn_missil()
+
+    #define posicao objetos
+    player_rect.x = pos_player_x
+    player_rect.y = pos_player_y
+
+    invasores_rect.x = pos_invasores_x
+    invasores_rect.y = pos_invasores_y
+
+    missil_rect.x = pos_missil_x
+    missil_rect.y = pos_missil_y
+ 
+    #aplica limites da tela nos invasores e respawn
+    if pos_invasores_x == 50 or colisao():
+        pos_invasores_x = respawn()[0]
+        pos_invasores_y = respawn()[1]
+
+    todos_invasores.update()
+
+    #define minimo de pontos para o jogo rodar
+    if pontos < 0:
+        rodando = False
+
+    #movimento do background
+    x -= 2 
+    #movimento invasores
+    pos_invasores_x -= 1
+    
+    #movimeno missil
+    pos_missil_x += velocidade_missil_x
+
+    pygame.draw.rect(screen, (255,0,0), player_rect,4)
+    pygame.draw.rect(screen, (255,0,0), invasores_rect,4)
+    pygame.draw.rect(screen, (255,0,0), missil_rect,4)
+
+    #renderizacao dos pontos
+    score = fonte.render(f'Pontos: {int(pontos)}', True, (0,0,0))
+    screen.blit(score, (50,50))
+
+    #cria imagem invasores, nave e missil
+    screen.blit(missil, (pos_missil_x, pos_missil_y))
+    screen.blit(player,(pos_player_x, pos_player_y))
+
+
+    pygame.display.update()
